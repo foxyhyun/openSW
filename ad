@@ -1,0 +1,29 @@
+    def idxNorm(self):##ROA, ROE, EPS, BPS, DPS, PER, PBR의 각 항목당 (2018.12 ~ 2023.12)의 데이터 6개 갖음 SIZE(7,8)
+        get_param = {
+            'pGB':1,
+            'gicode':'A%s'%(self.code),
+            'cID':'',
+            'MenuYn':'Y',
+            'ReportGB':'',
+            'NewMenuID':101,
+            'stkGb':701,
+        }
+        get_param = parse.urlencode(get_param)
+        url="http://comp.fnguide.com/SVO2/ASP/SVD_Main.asp?%s"%(get_param)
+        tables = pd.read_html(url, header=0,encoding='utf-8')
+        sit=np.array(tables[11]) 
+
+        data=[]#정규화 시작
+
+        for i in range(7):
+            crw=[]
+            for j in range(7):
+                if(sit[17+i][j+1] != sit[17+i][j+1]):
+                    idx =  (float(sit[17+i][j]) + float(sit[17+i][j+2]))/2.0
+                    crw.append(idx)
+                    continue
+                idx = float(sit[17+i][j+1])
+                crw.append(idx)
+            data.append(l3Norm(crw))
+        data=np.array(data)
+        return data
