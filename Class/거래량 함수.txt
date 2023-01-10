@@ -1,0 +1,31 @@
+오차검증
+
+피드백 반영
+
+  거래량() - 인풋(변동성 의미하므로) 다른 지표와 다른 의미
+
+  N/A :  PER이 - 인경우 + 신생기업일때
+
+  기존 시스템 고려 항목들 찾아보기  
+
+  종가18년 12월3일 2021 12월 1일 년 데이터를 가지고 22년 12월 1일예측
+  data[13:50] / data[:,1:5] / data[268:1008]  / data[268:1008]
+환율 / 지표 / 종가 / 거래량
+
+
+
+    def amount(self): #거래량 정규화 된 함수
+        csv = pd.read_csv('./Data/주식가격/%s.csv'%(self.code))
+        cut_csv = csv[:][:1148]
+        arr = np.array(cut_csv)
+        array = arr[:,6]
+        n=int(np.mean(array))
+        count=1
+        while(n != 0):
+            n = int(n/10);
+            if n == 0 : break
+            count=count*10;
+        array = arr[:,6]/count
+        array = np.array(array)
+        close = array.reshape(-1,1)
+        return close
