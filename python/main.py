@@ -4,7 +4,8 @@ from predict import predictNextDay
 from plotGraph import plotGraph
 
 
-coid = input("회사명 : ")
+coname = input("회사명 : ")
+coid = Stock.codeName(coname)
 days = int(input("일 수"))
 CO = Stock(coid)
 

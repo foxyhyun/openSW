@@ -18,13 +18,29 @@ def normalize(inp):# *10안함
         result.append(((i-np.mean(inp))/np.var(inp)))
     return result
 
+def normalizeAmount(array): #거래량 정규화 된 함수
+    n=int(np.mean(array))
+    count=1
+    while(n != 0):
+        n = int(n/10);
+        if n == 0 : break
+        count=count*10;
+    return count
+
 class Stock:
     
     Exchange='./Data/Exchange.csv' #객체가 공통으로 사용할 환율 데이터 (동적크롤링할줄몰라서 csv로 받아옴)
     
     def __init__(self,code):
         self.code=code
-    
+    @staticmethod  
+    def codeName(name):
+        csv = pd.read_csv("./Code.csv",encoding='cp949')
+        csv = np.array(csv)
+        data=csv[:][:]
+        for i in range(len(data)):
+            if(data[i][3] == name):
+                return data[i][1];
     @staticmethod
     def exchangeRate():  ##1달간격의 환율의 종가데이터  1행배열 57요소( 18.05.01~  23.01.01) 배열로 출력 SIZE(1,57)
         csv = pd.read_csv(Stock.Exchange,encoding='utf8')
@@ -94,7 +110,8 @@ class Stock:
         df = df.dropna()
         arr = df.to_numpy()
         arr1 = np.flipud(arr[:,1].reshape(-1,1))/10000
-        arr2 = np.flipud(arr[:,6].reshape(-1,1))/10000000
+        arr2 = np.flipud(arr[:,6].reshape(-1,1))
+        arr2 /= normalizeAmount(arr2)
         date = np.flipud(arr[:,0].reshape(-1,1))
         return np.concatenate((arr1, arr2), axis=1), date
     
