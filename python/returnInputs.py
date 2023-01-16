@@ -87,5 +87,5 @@ def returnInput(price, idx):
                                np.full((22,1), er[-3]),
                                np.full((19,1), er[-2]),
                                np.full((17,1), er[-1])), axis=0)
-    train_inputs = np.concatenate((array, exchange), axis=1)
+    train_inputs = np.concatenate((array[-1148:], exchange), axis=1)
     return train_inputs[:-1,:].astype(float)
