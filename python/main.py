@@ -12,8 +12,8 @@ CO = Stock(coid)
 prices, date = CO.returnPrices()
 idx = CO.returnIdx()
 
-prices=prices[-1148:,:]
-dates = date[-1148:,0].tolist()
+prices=prices[-1127:,:]
+dates = date[-1127:,0].tolist()
 
 for i in range(days):
     predictedPrice = predictNextDay(prices, idx)[0,0]
@@ -21,4 +21,3 @@ for i in range(days):
     dates.append("D+%s"%(i+1))
     
 plotGraph(prices, dates)
-

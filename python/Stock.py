@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from bs4 import BeautifulSoup as bs
+
 import urllib
 from urllib import parse
 
@@ -19,7 +20,7 @@ def normalize(inp):# *10안함
 
 def normalizeAmount(array): #거래량 정규화 된 함수
     n=int(np.mean(array))
-    count=1
+    count=10
     while(n != 0):
         n = int(n/10);
         if n == 0 : break
@@ -57,6 +58,20 @@ class Stock:
         data = data.astype('float32')
         data = normalize_scale(data) 
         return data
+    @staticmethod
+    def consumIdx():
+        csv = pd.read_csv("./totalIdx.csv",encoding='cp949')
+        csv  =np.array(csv)
+        csv = csv[0][1:]
+        csv = csv.reshape(-1,1)
+        return csv
+    @staticmethod
+    def kospiIdx():
+        csv = pd.read_csv("./totalIdx.csv",encoding='cp949')
+        csv  =np.array(csv)
+        csv = csv[1][1:]
+        csv = csv.reshape(-1,1)
+        return csv
 
     def returnIdx(self):##ROA, ROE, EPS, BPS, DPS, PER, PBR의 각 항목당 (2018.12 ~ 2023.12)의 데이터 6개 갖음 SIZE(7,8)
         get_param = {
@@ -74,17 +89,17 @@ class Stock:
         sit=np.array(tables[11]) 
 
         data=[]#정규화 시작
-
-        for i in range(7):
+    
+        for i in range(6):
             crw=[]
-            if (i == 4): continue
+            if (i == 2 or i==3): continue
             for j in range(7):
                 
-                if(sit[17+i][j+1] != sit[17+i][j+1]):
-                    idx =  (float(sit[17+i][j]) + float(sit[17+i][j+2]))/2.0
+                if(sit[18+i][j+1] != sit[18+i][j+1]):
+                    idx =  (float(sit[18+i][j]) + float(sit[18+i][j+2]))/2.0
                     crw.append(idx)
                     continue
-                idx = float(sit[17+i][j+1])
+                idx = float(sit[18+i][j+1])
                 crw.append(idx)
             data.append(normalize(crw))
         data=np.array(data)

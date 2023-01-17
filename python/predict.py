@@ -8,8 +8,8 @@ dmodel = load_model('dailymodel.h5')
 
 def predictNextDay(prices, idx):
     pre_inputs = []
-    prices=prices[-1148:]
-    idx=idx[-1148:]
+    prices=prices[-1127:]
+    idx=idx[-1127:]
     pre_inputs.append(returnInput(prices, idx))
     pre_inputs = np.array(pre_inputs)
     return dmodel.predict(pre_inputs)
