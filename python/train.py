@@ -56,7 +56,7 @@ train_labels = []
 train_inputs.append(returnInput(sa, sadata))
 train_inputs.append(returnInput(sac, sacdata))
 train_inputs.append(returnInput(sal, saldata))
-train_inputs.append(returnInput(sas, sasdata))
+train_inputs.append(returnInput(sas, sasdata))X
 train_inputs.append(returnInput(hdc, hdcdata))
 train_inputs.append(returnInput(hdm, hdmdata))
 train_inputs.append(returnInput(hds, hdsdata))
