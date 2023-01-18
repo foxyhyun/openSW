@@ -18,7 +18,7 @@ dates = date[-1127:,0].tolist()
 
 for i in range(days):
     predictedPrice = predictNextDay(prices, idx)[0,0]
-    prices = np.concatenate((prices, np.array([predictedPrice,prices[-1,1]]).reshape(1,-1)), axis=0)
+    prices = np.concatenate((prices, np.array([predictedPrice, prices[-1,1]]).reshape(1,-1)), axis=0)
     dates.append("D+%s"%(i+1))
     
 plotGraph(prices, dates)

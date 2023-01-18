@@ -20,7 +20,7 @@ def normalize(inp):# *10안함
 
 def normalizeAmount(array): #거래량 정규화 된 함수
     n=int(np.mean(array))
-    count=10
+    count=1
     while(n != 0):
         n = int(n/10);
         if n == 0 : break
@@ -124,7 +124,7 @@ class Stock:
         df = df.dropna()
         arr = df.to_numpy()
         arr1 = np.flipud(arr[:,1].reshape(-1,1))
-        arr1 /= normalizeAmount(arr1)
+        arr1 /= 10000
         arr2 = np.flipud(arr[:,6].reshape(-1,1))
         arr2 /= normalizeAmount(arr2)
         date = np.flipud(arr[:,0].reshape(-1,1))

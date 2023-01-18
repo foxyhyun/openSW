@@ -7,7 +7,7 @@ def plotGraph(prices, dates):
     total_len = len(data_df.index[0:])
     plt.figure(figsize=(15,10))
     plt.plot(data_df.index[0:1127], data_df[0:1127], color='blue')
-    plt.plot(data_df.index[1126:], data_df[1126:], color='red')
-    plt.xticks(np.arange(0, total_len+1, 10), rotation=45)
+    plt.plot(data_df.index[1127:], data_df[1127:], color='red')
+    plt.xticks(np.arange(0, total_len+1, 20), rotation=90)
     plt.show()
     

@@ -29,11 +29,11 @@ def returnrInput(price, idx):
     idxdata = ((array[:,2]*6.0).reshape(-1,1)+(array[:,3]*560.0).reshape(-1,1)+(array[:,4]*(-10.0)).reshape(-1,1)+(array[:,5]/(-1.25)).reshape(-1,1))
     idxdata /= 4.0
     idxdata = np.array(idxdata)
-    allidx = array[:,1].reshape(-1,1)*5+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
+    allidx = array[:,1].reshape(-1,1)+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
     train_inputs = array[:,0].reshape(-1,1)
     
-    train_inputs = np.concatenate((train_inputs,
-                                   allidx),
+    train_inputs = np.concatenate((allidx/10,
+                                  train_inputs),
                                   axis=1)
     return train_inputs[:-1,:].astype(float)
 
@@ -65,11 +65,11 @@ def returnInput(price, idx):
     idxdata = ((array[:,2]*6.0).reshape(-1,1)+(array[:,3]*560.0).reshape(-1,1)+(array[:,4]*(-10.0)).reshape(-1,1)+(array[:,5]/(-1.25)).reshape(-1,1))
     idxdata /= 4.0
     idxdata = np.array(idxdata)
-    allidx = array[:,1].reshape(-1,1)*5+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
+    allidx = array[:,1].reshape(-1,1)+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
     train_inputs = array[:,0].reshape(-1,1)
     
-    train_inputs = np.concatenate((train_inputs,
-                                   allidx),
+    train_inputs = np.concatenate((allidx/10,
+                                  train_inputs),
                                   axis=1)
     return train_inputs[:,:].astype(float)
 

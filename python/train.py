@@ -1,15 +1,9 @@
 import numpy as np
 from Stock import Stock
-
 from returnInputs import returnInput
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint
-
-def returnDailyLabels(a,b):
-    inputs = returnInput(a, b)
-    results = inputs[1:,0].reshape(-1,1).astype(float)
-    return results
 
 SA = Stock('005930');   sa,_=SA.returnPrices();     sadata=SA.returnIdx();
 SAC = Stock('029780');  sac,_=SAC.returnPrices();   sacdata=SAC.returnIdx();
@@ -35,7 +29,6 @@ SOIL = Stock('010950'); soil,_=SOIL.returnPrices(); soildata=SOIL.returnIdx();
 KIA = Stock('000270');  kia,_=KIA.returnPrices();   kiadata=KIA.returnIdx();
 KA = Stock('035720');   ka,_=KA.returnPrices();     kadata=KA.returnIdx();
 KT = Stock('030200');   kt,_=KT.returnPrices();     ktdata=KT.returnIdx();
-KORA = Stock('010130'); kora,_=KORA.returnPrices(); koradata=KORA.returnIdx();
 HANS = Stock('009830'); hans,_=HANS.returnPrices(); hansdata=HANS.returnIdx();
 POC = Stock('003670');  poc,_=POC.returnPrices();   pocdata=POC.returnIdx();
 POH = Stock('005490');  poh,_=POH.returnPrices();   pohdata=POH.returnIdx();
@@ -48,9 +41,6 @@ HSAM=Stock('009240');   hsam,_=HSAM.returnPrices(); hsamdata=HSAM.returnIdx();
 PUNG = Stock('103140'); pung,_=PUNG.returnPrices(); pungdata=PUNG.returnIdx();
 COLM= Stock('161890');  colm,_=COLM.returnPrices(); colmdata=COLM.returnIdx();
 DANG= Stock('185750');  dang,_=DANG.returnPrices(); dangdata=DANG.returnIdx();
-#LJ=Stock('280360');     lj,_=LJ.returnPrices();     ljdata=LJ.returnIdx();
-#ORI = Stock('271560');  ori,_=ORI.returnPrices();   oridata=ORI.returnIdx();
-#LGE = Stock('373220');  lge,_=LGE.returnPrices();   lgedata=LGE.returnIdx();
 
 train_inputs = []
 train_labels = []
@@ -62,14 +52,11 @@ train_inputs.append(returnInput(hdc, hdcdata))
 train_inputs.append(returnInput(hdm, hdmdata))
 train_inputs.append(returnInput(hds, hdsdata))
 train_inputs.append(returnInput(sk, skdata))
-#train_inputs.append(returnInput(ski, skidata))
 train_inputs.append(returnInput(skc, skcdata))
 train_inputs.append(returnInput(skg, skgdata))
 train_inputs.append(returnInput(skt, sktdata))
 train_inputs.append(returnInput(skn, skndata))
-#train_inputs.append(returnInput(dau, daudata))
 train_inputs.append(returnInput(dw, dwdata))
-#train_inputs.append(returnInput(dwp, dwpdata))
 train_inputs.append(returnInput(sfa, sfadata))
 train_inputs.append(returnInput(gb, gbdata))
 train_inputs.append(returnInput(lgu, lgudata))
@@ -78,45 +65,40 @@ train_inputs.append(returnInput(nav, navdata))
 train_inputs.append(returnInput(ncs, ncsdata))
 train_inputs.append(returnInput(cel, celdata))
 train_inputs.append(returnInput(soil, soildata))
-#train_inputs.append(returnInput(orih, orihdata))
-#train_inputs.append(returnInput(gang, gangdata))
 train_inputs.append(returnInput(kia, kiadata))
 train_inputs.append(returnInput(ka, kadata))
 train_inputs.append(returnInput(kt, ktdata))
-#train_inputs.append(returnInput(koa, koadata))
-#train_inputs.append(returnInput(kora, koradata))
 train_inputs.append(returnInput(hans, hansdata))
 train_inputs.append(returnInput(poc, pocdata))
 train_inputs.append(returnInput(poh, pohdata))
 train_inputs.append(returnInput(nhn, nhndata))
-#train_inputs.append(returnInput(kl, kldata))
-#train_inputs.append(returnInput(uc, ucdata))
-#train_inputs.append(returnInput(ll, lldata))
 train_inputs.append(returnInput(isd, isddata))
 train_inputs.append(returnInput(dt, dtdata))
-#train_inputs.append(returnInput(asi, asidata))
 train_inputs.append(returnInput(db, dbdata))
-#train_inputs.append(returnInput(sp, spdata))
 train_inputs.append(returnInput(hs, hsdata))
 train_inputs.append(returnInput(hsam, hsamdata))
 train_inputs.append(returnInput(pung, pungdata))
 train_inputs.append(returnInput(colm, colmdata))
 train_inputs.append(returnInput(dang, dangdata))
-#train_inputs.append(returnInput(hana, hanadata))
-#train_inputs.append(returnInput(jj, jjdata))
 train_inputs = np.array(train_inputs)
-train_labels = train_inputs[:,-1,0]
+train_labels = train_inputs[:,-1,1]
 train_inputs = np.array(train_inputs)[:,:-1,:]
 train_labels = np.array(train_labels)
+
+np.save(open('./train_inputs.npy', 'wb'), train_inputs)
+np.save(open('./train_labels.npy', 'wb'), train_labels)
+
+train_inputs = np.load(open('./train_inputs.npy', 'rb'))
+train_labels = np.load(open('./train_labels.npy', 'rb'))
 
 cp_callback = ModelCheckpoint(
     './dmodel.h5', monitor='loss', verbose=1, save_best_only=True, save_weights_only=False)
 dmodel = Sequential([
-    layers.LSTM(64, input_shape=(train_inputs.shape[1],train_inputs.shape[2]), return_sequences=True),
-    layers.Dense(1, activation = 'linear')
+    layers.LSTM(256, input_shape=(train_inputs.shape[1],train_inputs.shape[2]), return_sequences=True),
+    layers.Dense(1, activation = 'relu')
 ])
 
 dmodel.compile(loss='mse',optimizer='adam')
 dmodel.summary()
-history = dmodel.fit(train_inputs, train_labels, batch_size=1, epochs=50,
+history = dmodel.fit(train_inputs, train_labels, batch_size=1, epochs=150,
                     callbacks=cp_callback)
