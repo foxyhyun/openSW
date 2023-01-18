@@ -4,6 +4,7 @@ from Stock import Stock
 from returnInputs import returnInput
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 def returnDailyLabels(a,b):
     inputs = returnInput(a, b)
@@ -56,7 +57,7 @@ train_labels = []
 train_inputs.append(returnInput(sa, sadata))
 train_inputs.append(returnInput(sac, sacdata))
 train_inputs.append(returnInput(sal, saldata))
-train_inputs.append(returnInput(sas, sasdata))X
+train_inputs.append(returnInput(sas, sasdata))
 train_inputs.append(returnInput(hdc, hdcdata))
 train_inputs.append(returnInput(hdm, hdmdata))
 train_inputs.append(returnInput(hds, hdsdata))
@@ -83,7 +84,7 @@ train_inputs.append(returnInput(kia, kiadata))
 train_inputs.append(returnInput(ka, kadata))
 train_inputs.append(returnInput(kt, ktdata))
 #train_inputs.append(returnInput(koa, koadata))
-train_inputs.append(returnInput(kora, koradata))
+#train_inputs.append(returnInput(kora, koradata))
 train_inputs.append(returnInput(hans, hansdata))
 train_inputs.append(returnInput(poc, pocdata))
 train_inputs.append(returnInput(poh, pohdata))
@@ -104,68 +105,18 @@ train_inputs.append(returnInput(dang, dangdata))
 #train_inputs.append(returnInput(hana, hanadata))
 #train_inputs.append(returnInput(jj, jjdata))
 train_inputs = np.array(train_inputs)
+train_labels = train_inputs[:,-1,0]
+train_inputs = np.array(train_inputs)[:,:-1,:]
+train_labels = np.array(train_labels)
 
-train_labels.append(returnDailyLabels(sa, sadata))
-train_labels.append(returnDailyLabels(sac, sacdata))
-train_labels.append(returnDailyLabels(sal, saldata))
-train_labels.append(returnDailyLabels(sas, sasdata))
-train_labels.append(returnDailyLabels(hdc, hdcdata))
-train_labels.append(returnDailyLabels(hdm, hdmdata))
-train_labels.append(returnDailyLabels(hds, hdsdata))
-train_labels.append(returnDailyLabels(sk, skdata))
-#train_labels.append(returnDailyLabels(ski, skidata))
-train_labels.append(returnDailyLabels(skc, skcdata))
-train_labels.append(returnDailyLabels(skg, skgdata))
-train_labels.append(returnDailyLabels(skt, sktdata))
-train_labels.append(returnDailyLabels(skn, skndata))
-#train_labels.append(returnDailyLabels(dau, daudata))
-train_labels.append(returnDailyLabels(dw, dwdata))
-#train_labels.append(returnDailyLabels(dwp, dwpdata))
-train_labels.append(returnDailyLabels(sfa, sfadata))
-train_labels.append(returnDailyLabels(gb, gbdata))
-train_labels.append(returnDailyLabels(lgu, lgudata))
-train_labels.append(returnDailyLabels(lgel, lgeldata))
-train_labels.append(returnDailyLabels(nav, navdata))
-train_labels.append(returnDailyLabels(ncs, ncsdata))
-train_labels.append(returnDailyLabels(cel, celdata))
-train_labels.append(returnDailyLabels(soil, soildata))
-#train_labels.append(returnDailyLabels(orih, orihdata))
-#train_labels.append(returnDailyLabels(gang, gangdata))
-train_labels.append(returnDailyLabels(kia, kiadata))
-train_labels.append(returnDailyLabels(ka, kadata))
-train_labels.append(returnDailyLabels(kt, ktdata))
-#train_labels.append(returnDailyLabels(koa, koadata))
-train_labels.append(returnDailyLabels(kora, koradata))
-train_labels.append(returnDailyLabels(hans, hansdata))
-train_labels.append(returnDailyLabels(poc, pocdata))
-train_labels.append(returnDailyLabels(poh, pohdata))
-train_labels.append(returnDailyLabels(nhn, nhndata))
-#train_labels.append(returnDailyLabels(kl, kldata))
-#train_labels.append(returnDailyLabels(uc, ucdata))
-#train_labels.append(returnDailyLabels(ll, lldata))
-train_labels.append(returnDailyLabels(isd, isddata))
-train_labels.append(returnDailyLabels(dt, dtdata))
-#train_labels.append(returnDailyLabels(asi, asidata))
-train_labels.append(returnDailyLabels(db, dbdata))
-#train_labels.append(returnDailyLabels(sp, spdata))
-train_labels.append(returnDailyLabels(hs, hsdata))
-train_labels.append(returnDailyLabels(hsam, hsamdata))
-train_labels.append(returnDailyLabels(pung, pungdata))
-train_labels.append(returnDailyLabels(colm, colmdata))
-train_labels.append(returnDailyLabels(dang, dangdata))
-#train_labels.append(returnDailyLabels(hana, hanadata))
-#train_labels.append(returnDailyLabels(jj, jjdata))
-train_labels = np.array(train_labels)[:,-1,:]
-
-
+cp_callback = ModelCheckpoint(
+    './dmodel.h5', monitor='loss', verbose=1, save_best_only=True, save_weights_only=False)
 dmodel = Sequential([
-    layers.LSTM(256, input_shape=(train_inputs.shape[1],train_inputs.shape[2]), return_sequences=True),
-    layers.Dense(1, activation = 'relu')
+    layers.LSTM(64, input_shape=(train_inputs.shape[1],train_inputs.shape[2]), return_sequences=True),
+    layers.Dense(1, activation = 'linear')
 ])
 
-dmodel.compile(loss='mse',optimizer='adam', metrics='mae')
+dmodel.compile(loss='mse',optimizer='adam')
 dmodel.summary()
-dmodel.fit(train_inputs, train_labels,
-    epochs=200, batch_size=1
-)
-dmodel.save('dailymodel.h5')
+history = dmodel.fit(train_inputs, train_labels, batch_size=1, epochs=50,
+                    callbacks=cp_callback)

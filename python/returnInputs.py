@@ -1,9 +1,44 @@
 import numpy as np
-
-
 from Stock import Stock
+
+def returnrInput(price, idx):
+    price2018 = price[0:159]
+    price2019 = price[159:405]
+    price2020 = price[405:653]
+    price2021 = price[653:901]
+    price2022 = price[901:]
+    
+    prices = np.concatenate((price2018, price2019, price2020, price2021, price2022), axis=0)
+    idxArray = np.concatenate((np.full((len(price2018),4), idx[:,0]),
+                            np.full((len(price2019),4), idx[:,1]),
+                            np.full((len(price2020),4), idx[:,2]),
+                            np.full((len(price2021),4), idx[:,3]),
+                            np.full((len(price2022),4), idx[:,4])), axis=0)
+    arr = np.concatenate((prices, idxArray), axis=1)
+    array = np.array(arr)
+
+    exc = Stock.exchangeRate()
+    exc = np.array(exc).reshape(-1, 1)
+    exchange = monthlydata(exc)
+    kos = Stock.kospiIdx()
+    kos = np.array(kos).reshape(-1, 1)
+    kospi = monthlydata(kos)
+    con = Stock.consumIdx()
+    con = np.array(con).reshape(-1, 1)
+    consume = monthlydata(con)
+    idxdata = ((array[:,2]*6.0).reshape(-1,1)+(array[:,3]*560.0).reshape(-1,1)+(array[:,4]*(-10.0)).reshape(-1,1)+(array[:,5]/(-1.25)).reshape(-1,1))
+    idxdata /= 4.0
+    idxdata = np.array(idxdata)
+    allidx = array[:,1].reshape(-1,1)*5+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
+    train_inputs = array[:,0].reshape(-1,1)
+    
+    train_inputs = np.concatenate((train_inputs,
+                                   allidx),
+                                  axis=1)
+    return train_inputs[:-1,:].astype(float)
+
 def returnInput(price, idx):
-    price2018 = price[41:159]
+    price2018 = price[40:159]
     price2019 = price[159:405]
     price2020 = price[405:653]
     price2021 = price[653:901]
@@ -17,7 +52,7 @@ def returnInput(price, idx):
                             np.full((len(price2022),4), idx[:,4])), axis=0)
     arr = np.concatenate((prices, idxArray), axis=1)
     array = np.array(arr)
-    
+
     exc = Stock.exchangeRate()
     exc = np.array(exc).reshape(-1, 1)
     exchange = monthlydata(exc)
@@ -27,14 +62,19 @@ def returnInput(price, idx):
     con = Stock.consumIdx()
     con = np.array(con).reshape(-1, 1)
     consume = monthlydata(con)
-    train_inputs = np.concatenate((array[-1127:],
-                                   np.flipud(exchange.reshape(-1,1)),
-                                   np.flipud(kospi.reshape(-1,1)),
-                                   np.flipud(consume.reshape(-1,1))), axis=1)
+    idxdata = ((array[:,2]*6.0).reshape(-1,1)+(array[:,3]*560.0).reshape(-1,1)+(array[:,4]*(-10.0)).reshape(-1,1)+(array[:,5]/(-1.25)).reshape(-1,1))
+    idxdata /= 4.0
+    idxdata = np.array(idxdata)
+    allidx = array[:,1].reshape(-1,1)*5+idxdata+np.flipud(exchange.reshape(-1,1))+np.flipud(kospi.reshape(-1,1))+np.flipud((consume/10).reshape(-1,1))
+    train_inputs = array[:,0].reshape(-1,1)
+    
+    train_inputs = np.concatenate((train_inputs,
+                                   allidx),
+                                  axis=1)
     return train_inputs[:,:].astype(float)
 
 def monthlydata(er):
-    monthdata = np.concatenate((np.full((22,1), er[-55]),
+    monthdata = np.concatenate((np.full((23,1), er[-55]),
                                np.full((19,1), er[-54]),
                                np.full((20,1), er[-53]),
                                np.full((22,1), er[-52]),
@@ -89,4 +129,4 @@ def monthlydata(er):
                                np.full((22,1), er[-3]),
                                np.full((19,1), er[-2]),
                                np.full((17,1), er[-1])), axis=0)
-    return monthdata
+    return np.array(monthdata)

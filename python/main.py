@@ -2,7 +2,8 @@ import numpy as np
 from Stock import Stock
 from predict import predictNextDay
 from plotGraph import plotGraph
-
+import warnings
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
 coname = input("회사명 : ")
 coid = Stock.codeName(coname)
@@ -21,3 +22,4 @@ for i in range(days):
     dates.append("D+%s"%(i+1))
     
 plotGraph(prices, dates)
+

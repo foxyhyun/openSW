@@ -123,7 +123,8 @@ class Stock:
             df = pd.concat([df, pd.read_html(str(html), header=0)[0]])
         df = df.dropna()
         arr = df.to_numpy()
-        arr1 = np.flipud(arr[:,1].reshape(-1,1))/10000
+        arr1 = np.flipud(arr[:,1].reshape(-1,1))
+        arr1 /= normalizeAmount(arr1)
         arr2 = np.flipud(arr[:,6].reshape(-1,1))
         arr2 /= normalizeAmount(arr2)
         date = np.flipud(arr[:,0].reshape(-1,1))
